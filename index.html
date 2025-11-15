@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" type="castle/ico" href="castle.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blood & Moon Scroll Generator</title>
@@ -59,6 +60,39 @@
             --tw-bg-opacity: 1;
             background-color: rgb(10 10 10 / var(--tw-bg-opacity)); /* Very Dark Background */
         }
+        
+        /* Tooltip Container Styling */
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Tooltip Text Styling */
+        .tooltip-container .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: #3f0e1d; /* Dark Rose */
+            color: #fecaca; /* Rose 200 */
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 8px;
+            position: absolute;
+            z-index: 10;
+            bottom: 100%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+            line-height: 1.2;
+            pointer-events: none; /* Allows clicks through the tooltip area */
+        }
+
+        /* Show the tooltip text when hovering over the tooltip container */
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
 
     </style>
 </head>
@@ -78,6 +112,24 @@
                 <h2 class="text-2xl gothic-title text-rose-400 mb-4 border-b border-rose-700 pb-2">
                     Ink & Quill
                 </h2>
+                
+                <!-- Project Brief Context Section -->
+                <details class="bg-gray-800 p-3 rounded-lg mb-4 text-sm border border-gray-700 cursor-pointer">
+                    <summary class="gothic-title text-rose-300">
+                        View Thy World's Chronicle (Project Brief)
+                    </summary>
+                    <div class="mt-2 text-gray-400 space-y-2">
+                        <p>This setting is a medieval, low-fantasy, gothic Europe inspired by the Castlevania anime.</p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>The central conflict is Church vs. Vampire.</li>
+                            <li>Human magic is highly limited; no 'crazy shits'.</li>
+                            <li>The story takes place within a single, dark kingdom.</li>
+                        </ul>
+                        <p class="text-rose-400 font-semibold">Keep this context in mind when writing thy character's history and power!</p>
+                    </div>
+                </details>
+                <!-- End Project Brief Context Section -->
+
                 <form id="character-form" class="space-y-4">
                     
                     <div>
@@ -113,27 +165,57 @@
                     </div>
 
                     <div>
-                        <label for="appearance" class="block text-sm font-medium text-gray-300">Thy Appearance (Simple or Detailed)</label>
+                        <label for="appearance" class="flex items-center text-sm font-medium text-gray-300">
+                            Thy Appearance (Simple or Detailed)
+                            <span class="tooltip-container ml-2 text-rose-500/80">
+                                [?]
+                                <span class="tooltip-text">Describe physical features, clothing style (e.g., cleric robes, tattered peasant rags), and notable scars or marks.</span>
+                            </span>
+                        </label>
                         <textarea id="appearance" rows="3" required class="w-full mt-1 p-3 rounded-lg input-field focus:ring-rose-500 focus:border-rose-500"></textarea>
                     </div>
 
                     <div>
-                        <label for="personality" class="block text-sm font-medium text-gray-300">Thy Nature (4-7 Traits, separated by commas)</label>
+                        <label for="personality" class="flex items-center text-sm font-medium text-gray-300">
+                            Thy Nature (4-7 Traits, separated by commas)
+                            <span class="tooltip-container ml-2 text-rose-500/80">
+                                [?]
+                                <span class="tooltip-text">Examples: Zealous, Cunning, World-weary, Pious, Bloodthirsty, Loyal.</span>
+                            </span>
+                        </label>
                         <textarea id="personality" rows="2" required class="w-full mt-1 p-3 rounded-lg input-field focus:ring-rose-500 focus:border-rose-500"></textarea>
                     </div>
 
                     <div>
-                        <label for="backstory" class="block text-sm font-medium text-gray-300">Thy History (2-4 brief bullet points, separate each point with a newline)</label>
+                        <label for="backstory" class="flex items-center text-sm font-medium text-gray-300">
+                            Thy History (2-4 brief bullet points, separate each point with a newline)
+                            <span class="tooltip-container ml-2 text-rose-500/80">
+                                [?]
+                                <span class="tooltip-text">Keep human backstories grounded in the Church vs. Vampire conflict (e.g., lost family to a horde, trained by a secretive order).</span>
+                            </span>
+                        </label>
                         <textarea id="backstory" rows="4" required class="w-full mt-1 p-3 rounded-lg input-field focus:ring-rose-500 focus:border-rose-500"></textarea>
                     </div>
 
                     <div id="power-field" class="hidden">
-                        <label for="special-power" class="block text-sm font-medium text-rose-400">Thy Special Power (Vampire only)</label>
+                        <label for="special-power" class="flex items-center text-sm font-medium text-rose-400">
+                            Thy Special Power (Vampire only)
+                            <span class="tooltip-container ml-2 text-rose-500/80">
+                                [?]
+                                <span class="tooltip-text">A specific, low-level power (e.g., Minor Hypnosis, Shadow Step, Night Sight). Avoid super strength.</span>
+                            </span>
+                        </label>
                         <input type="text" id="special-power" class="w-full mt-1 p-3 rounded-lg input-field border-rose-500 focus:ring-rose-500 focus:border-rose-500">
                     </div>
                     
                     <div>
-                        <label for="equipment" class="block text-sm font-medium text-gray-300">Thy Equipment (Rapier, Black Armour, etc.)</label>
+                        <label for="equipment" class="flex items-center text-sm font-medium text-gray-300">
+                            Thy Equipment (Rapier, Black Armour, etc.)
+                            <span class="tooltip-container ml-2 text-rose-500/80">
+                                [?]
+                                <span class="tooltip-text">A weapon or important tool. Remember: human magic is limited, focus on steel, holy items, or simple alchemy.</span>
+                            </span>
+                        </label>
                         <input type="text" id="equipment" required class="w-full mt-1 p-3 rounded-lg input-field focus:ring-rose-500 focus:border-rose-500">
                     </div>
 
@@ -343,7 +425,7 @@ ${powerLine}Equipment: ${equipment}
                     showMessage('A failure in the transcription. Copy the scroll manually.', 'bg-red-800 text-white');
                 }
             } catch (err) {
-                showMessage('An error occurred during copy. Copy the scroll manually.', 'bg-red-800 text-white');
+                showMessage('A failure in the transcription. Copy the scroll manually.', 'bg-red-800 text-white');
             } finally {
                 document.body.removeChild(textarea);
             }
