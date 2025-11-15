@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" type="castle/ico" href="castle.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blood & Moon Scroll Generator</title>
@@ -70,7 +69,7 @@
             <h1 class="text-4xl sm:text-5xl gothic-title text-rose-400 mb-2">
                 Blood & Moon Scroll
             </h1>
-            <p class="text-sm text-gray-400">A Solemn Transcription for the Night's Chronicle</p>
+            <p class="text-sm text-gray-400">A Solemn Transcription for Hawke's Chronicle</p>
         </header>
 
         <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -143,7 +142,7 @@
                             Drop Thy Blood Here
                         </button>
                         <button type="button" id="music-button" onclick="toggleMusic()" class="py-3 mt-2 sm:w-auto px-6 gothic-title bg-gray-700 hover:bg-gray-600 text-gray-300 font-bold rounded-lg transition duration-200 shadow-lg shadow-gray-900/50">
-                            Start Ambience
+                            Summon the Ambience
                         </button>
                     </div>
                     
@@ -163,7 +162,7 @@
         </main>
         
         <footer class="text-center mt-12 text-gray-600 text-xs">
-            The Night's Chronicle Generator. Designed for low-fantasy, gothic roleplay.
+            Hawke's Chronicle Generator. Make sure to clean the bloodstain.
         </footer>
     </div>
 
@@ -178,7 +177,7 @@
         let isMusicPlaying = false;
 
         /**
-         * Initializes and starts the gothic ambient drone using Tone.js.
+         * Initializes and starts the peaceful, mysterious piano/bell soundscape.
          */
         function startMusic() {
             if (isMusicStarted) {
@@ -193,29 +192,37 @@
                 return;
             }
 
-            // 1. Create a dark synth (FM synthesis works well for pads)
-            ambienceSynth = new Tone.PolySynth(Tone.AMSynth, {
-                oscillator: { type: "sawtooth" },
+            // 1. Create a soft synth (mimicking a gentle piano/bell)
+            ambienceSynth = new Tone.Synth({
+                oscillator: { type: "sine" }, // Very soft wave type
                 envelope: {
-                    attack: 4,  // Slow attack for atmospheric feel
-                    decay: 1,
-                    sustain: 0.8,
-                    release: 5  // Long release
+                    attack: 0.05,  // Fast attack (plucky)
+                    decay: 1.0,   
+                    sustain: 0.1, 
+                    release: 4     // Very long release for ambient tail
                 }
-            }).toDestination();
+            });
 
-            // 2. Add reverb for depth
-            const reverb = new Tone.Reverb({ decay: 5, preDelay: 0.05 }).toDestination();
-            ambienceSynth.connect(reverb);
+            // 2. Add effects (Delay for mystery, Reverb for space)
+            const delay = new Tone.PingPongDelay("4n", 0.3).toDestination();
+            const reverb = new Tone.Reverb({ decay: 5, preDelay: 0.5 }).toDestination();
+            
+            // Connect synth to effects chain
+            ambienceSynth.chain(delay, reverb, Tone.Destination);
 
-            // 3. Create a dark, low-frequency repeating chord (e.g., C2 minor)
+            // 3. Create a slow, peaceful, mysterious arpeggiated pattern (Am -> Dm)
+            const notes = ["A3", "C4", "E4", "A3", "D4", "F4", "D4", "G3"];
+            let noteIndex = 0;
+            
             const loop = new Tone.Loop(time => {
-                // C2 minor chord (C2, D#2, G2)
-                ambienceSynth.triggerAttackRelease(["C2", "Eb2", "G2"], "4n", time); 
-            }, "8n").start(0);
+                // Play note with a velocity of 0.5 (softer) over a duration of "2n"
+                ambienceSynth.triggerAttackRelease(notes[noteIndex % notes.length], "2n", time, 0.5); 
+                noteIndex++;
+            }, "1.5m").start(0); // Loop every 1.5 measures for a very slow, spacious pace
 
             // Start the Tone context and transport
             Tone.context.resume().then(() => {
+                Tone.Transport.bpm.value = 40; // Slow down the tempo significantly (40 BPM)
                 Tone.Transport.start();
                 isMusicStarted = true;
                 isMusicPlaying = true;
@@ -366,5 +373,4 @@ ${powerLine}Equipment: ${equipment}
 
     </script>
 </body>
-
 </html>
