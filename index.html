@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood & Moon Scroll Generator</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Tone.js for ambient music -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+        /* Custom styles for gothic ambiance */
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:wght@400;600&display=swap');
+        
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            letter-spacing: 0.025em;
+        }
+        
+        .gothic-title {
+            font-family: 'Cinzel', serif;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Scrollbar styling - Deep Red/Black */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #881337; /* Rose 800 */
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #18181b; /* Gray 900 */
+        }
+
+        /* Specific styling for the generated text area to look like an old scroll/parchment */
+        #output-sheet {
+            white-space: pre-wrap;
+            min-height: 200px;
+            background-color: #1f1f21; /* Near black */
+            border: 2px solid #be123c; /* Rose 700 border */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        /* Input fields - Black background, Red border */
+        .input-field {
+            background-color: #18181b; /* Near black */
+            border: 1px solid #9f1239; /* Rose 800 */
+            color: #d1d5db; /* Silver/Gray-300 */
+        }
+        
+        /* Tailwind configuration override for a black/red theme */
+        :root {
+            --tw-bg-opacity: 1;
+            background-color: rgb(10 10 10 / var(--tw-bg-opacity)); /* Very Dark Background */
+        }
+
+    </style>
+</head>
+<body class="bg-gray-950 min-h-screen p-4 sm:p-8 text-gray-200 antialiased">
+
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-8 border-b-2 border-rose-800 pb-4">
+            <h1 class="text-4xl sm:text-5xl gothic-title text-rose-400 mb-2">
+                Blood & Moon Scroll
+            </h1>
+            <p class="text-sm text-gray-400">A Solemn Transcription for the Night's Chronicle</p>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Input Form - Left Side -->
+            <div class="bg-gray-900 p-6 rounded-xl shadow-2xl border border-gray-800/50">
+                <h2 class="text-2xl gothic-title text-rose-400 mb-4 border-b border-rose-700 pb-2">
+                    Ink & Quill
+                </h2>
+                <form id="character-form" class="space-y-4">
+                    
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-300">Name & Family Name</label>
+                        <input type="text" id="name" required class="w-full mt-1 p-3 rounded-lg input-field focus:ring-rose-500 focus:border-rose-500">
+                    </div>
+
+                    <div>
+                        <label for="title" class="block text-sm font-medium text-gray-300">Title/Nickname (Optional)</label>
+                        <input type="text" id="title" class="w-full mt-1 p-3 rounded-lg input-field focus:ring-rose-500 focus:border-rose-500">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="origin" class="block text-sm font-medium text-gray-300">Origin</label>
+                            <select id="origin" required class="w-full mt-1 p-3 rounded-lg input-field focus:ring-rose-500 focus:border-rose-500 appearance-none pr-8">
+                                <option value="local">Local</option>
+                                <option value="stranger">Stranger</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="race" class="block text-sm font-medium text-gray-300">Race</label>
+                            <select id="race" required class="w-full mt-1 p-3 rounded-lg input-field focus:ring-rose-500 focus:border-rose-500 appearance-none pr-8" onchange="togglePowerField()">
+                                <option value="human">Human</option>
+                                <option value="vampire">Vampire</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="age" class="block text-sm font-medium text-gray-300">Age (18+)</label>
+                        <input type="number" id="age" min="18" required class="w-full mt-1 p-3 rounded-lg input-field focus:ring-rose-500 focus:border-rose-500">
+                    </div>
+
+                    <div>
+                        <label for="appearance" class="block text-sm font-medium text-gray-300">Thy Appearance (Simple or Detailed)</label>
+                        <textarea id="appearance" rows="3" required class="w-full mt-1 p-3 rounded-lg input-field focus:ring-rose-500 focus:border-rose-500"></textarea>
+                    </div>
+
+                    <div>
+                        <label for="personality" class="block text-sm font-medium text-gray-300">Thy Nature (4-7 Traits, separated by commas)</label>
+                        <textarea id="personality" rows="2" required class="w-full mt-1 p-3 rounded-lg input-field focus:ring-rose-500 focus:border-rose-500"></textarea>
+                    </div>
+
+                    <div>
+                        <label for="backstory" class="block text-sm font-medium text-gray-300">Thy History (2-4 brief bullet points, separate each point with a newline)</label>
+                        <textarea id="backstory" rows="4" required class="w-full mt-1 p-3 rounded-lg input-field focus:ring-rose-500 focus:border-rose-500"></textarea>
+                    </div>
+
+                    <div id="power-field" class="hidden">
+                        <label for="special-power" class="block text-sm font-medium text-rose-400">Thy Special Power (Vampire only)</label>
+                        <input type="text" id="special-power" class="w-full mt-1 p-3 rounded-lg input-field border-rose-500 focus:ring-rose-500 focus:border-rose-500">
+                    </div>
+                    
+                    <div>
+                        <label for="equipment" class="block text-sm font-medium text-gray-300">Thy Equipment (Rapier, Black Armour, etc.)</label>
+                        <input type="text" id="equipment" required class="w-full mt-1 p-3 rounded-lg input-field focus:ring-rose-500 focus:border-rose-500">
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button type="button" onclick="generateSheet()" class="flex-grow py-3 mt-2 gothic-title bg-rose-700 hover:bg-rose-600 text-white font-bold rounded-lg transition duration-200 shadow-lg shadow-rose-900/50">
+                            Drop Thy Blood Here
+                        </button>
+                        <button type="button" id="music-button" onclick="toggleMusic()" class="py-3 mt-2 sm:w-auto px-6 gothic-title bg-gray-700 hover:bg-gray-600 text-gray-300 font-bold rounded-lg transition duration-200 shadow-lg shadow-gray-900/50">
+                            Start Ambience
+                        </button>
+                    </div>
+                    
+                    <div id="message-box" class="mt-4 text-center p-3 rounded-lg hidden"></div>
+                </form>
+            </div>
+
+            <!-- Generated Sheet - Right Side -->
+            <div class="bg-gray-900 p-6 rounded-xl shadow-2xl border border-gray-800/50">
+                <h2 class="text-2xl gothic-title text-rose-400 mb-4 border-b border-rose-700 pb-2">
+                    Final Character Scroll (Ready to Bear Witness)
+                </h2>
+                <div id="output-sheet" class="p-4 rounded-lg text-sm text-gray-200 font-mono tracking-tighter">
+                    Fill the form and click 'Drop Thy Blood Here' to see thy sacred document appear, ready to be copied!
+                </div>
+            </div>
+        </main>
+        
+        <footer class="text-center mt-12 text-gray-600 text-xs">
+            The Night's Chronicle Generator. Designed for low-fantasy, gothic roleplay.
+        </footer>
+    </div>
+
+    <script>
+        // Global variables for the LLM API
+        const systemPrompt = "Thou art a gothic, low-fantasy RPG character sheet formatter. Structure the provided character data clearly and concisely for an RPG bot.";
+        const apiKey = "";
+        
+        // --- Tone.js Music Variables ---
+        let ambienceSynth = null;
+        let isMusicStarted = false;
+        let isMusicPlaying = false;
+
+        /**
+         * Initializes and starts the gothic ambient drone using Tone.js.
+         */
+        function startMusic() {
+            if (isMusicStarted) {
+                // If already initialized, just toggle play/pause
+                if (isMusicPlaying) {
+                    Tone.Transport.stop();
+                    isMusicPlaying = false;
+                } else {
+                    Tone.Transport.start();
+                    isMusicPlaying = true;
+                }
+                return;
+            }
+
+            // 1. Create a dark synth (FM synthesis works well for pads)
+            ambienceSynth = new Tone.PolySynth(Tone.AMSynth, {
+                oscillator: { type: "sawtooth" },
+                envelope: {
+                    attack: 4,  // Slow attack for atmospheric feel
+                    decay: 1,
+                    sustain: 0.8,
+                    release: 5  // Long release
+                }
+            }).toDestination();
+
+            // 2. Add reverb for depth
+            const reverb = new Tone.Reverb({ decay: 5, preDelay: 0.05 }).toDestination();
+            ambienceSynth.connect(reverb);
+
+            // 3. Create a dark, low-frequency repeating chord (e.g., C2 minor)
+            const loop = new Tone.Loop(time => {
+                // C2 minor chord (C2, D#2, G2)
+                ambienceSynth.triggerAttackRelease(["C2", "Eb2", "G2"], "4n", time); 
+            }, "8n").start(0);
+
+            // Start the Tone context and transport
+            Tone.context.resume().then(() => {
+                Tone.Transport.start();
+                isMusicStarted = true;
+                isMusicPlaying = true;
+            });
+        }
+        
+        /**
+         * Toggles the Special Power input field based on the selected Race.
+         */
+        function togglePowerField() {
+            const race = document.getElementById('race').value;
+            const powerField = document.getElementById('power-field');
+            if (race === 'vampire') {
+                powerField.classList.remove('hidden');
+                document.getElementById('special-power').setAttribute('required', 'required');
+            } else {
+                powerField.classList.add('hidden');
+                document.getElementById('special-power').removeAttribute('required');
+            }
+        }
+        
+        // Ensure the field state is correct on load
+        window.onload = togglePowerField;
+
+        /**
+         * Toggles the music on/off and updates the button text.
+         */
+        function toggleMusic() {
+            startMusic();
+            const button = document.getElementById('music-button');
+            if (isMusicPlaying) {
+                button.textContent = "Hush the Chimes";
+                button.classList.remove('bg-gray-700', 'text-gray-300');
+                button.classList.add('bg-rose-900', 'text-rose-200');
+            } else {
+                button.textContent = "Summon the Ambience";
+                button.classList.remove('bg-rose-900', 'text-rose-200');
+                button.classList.add('bg-gray-700', 'text-gray-300');
+            }
+        }
+
+        /**
+         * Collects form data, formats the character sheet, displays it, and copies it to clipboard.
+         */
+        function generateSheet() {
+            const form = document.getElementById('character-form');
+            if (!form.reportValidity()) {
+                return;
+            }
+
+            const name = document.getElementById('name').value.trim();
+            const title = document.getElementById('title').value.trim();
+            const origin = document.getElementById('origin').value.trim();
+            const race = document.getElementById('race').value.trim();
+            const age = document.getElementById('age').value.trim();
+            const appearance = document.getElementById('appearance').value.trim();
+            const personality = document.getElementById('personality').value.trim().split(/,\s*/).filter(p => p.length > 0);
+            const backstory = document.getElementById('backstory').value.trim().split(/\n+/).filter(b => b.length > 0);
+            const equipment = document.getElementById('equipment').value.trim();
+            
+            let specialPower = '';
+            if (race === 'vampire') {
+                specialPower = document.getElementById('special-power').value.trim();
+            }
+
+            const personalityList = personality.map(p => `- ${p}`).join('\n');
+            const backstoryList = backstory.map(b => `* ${b}`).join('\n');
+            
+            const titleLine = title ? `Title/Nickname: ${title}\n` : '';
+            const powerLine = specialPower ? `Special Power: ${specialPower}\n` : '';
+
+            const sheetText = `
+--- CHARACTER CARD ---
+Name: ${name}
+${titleLine}Origin: ${origin.charAt(0).toUpperCase() + origin.slice(1)}
+Race: ${race.charAt(0).toUpperCase() + race.slice(1)}
+Age: ${age}
+
+Appearance:
+${appearance}
+
+Personality:
+${personalityList}
+
+Backstory:
+${backstoryList}
+
+${powerLine}Equipment: ${equipment}
+----------------------
+`.trim();
+
+            document.getElementById('output-sheet').textContent = sheetText;
+            
+            // Attempt to copy the text
+            copyToClipboard(sheetText);
+        }
+
+        /**
+         * Copies text to the clipboard and shows a confirmation message.
+         */
+        function copyToClipboard(text) {
+            const messageBox = document.getElementById('message-box');
+            
+            // Using document.execCommand('copy') for better iframe compatibility
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showMessage('The scroll is sealed! Copied to thy clipboard.', 'bg-green-800 text-white');
+                } else {
+                    showMessage('A failure in the transcription. Copy the scroll manually.', 'bg-red-800 text-white');
+                }
+            } catch (err) {
+                showMessage('An error occurred during copy. Copy the scroll manually.', 'bg-red-800 text-white');
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+
+        /**
+         * Shows a temporary status message in the message box.
+         */
+        function showMessage(message, classes) {
+            const messageBox = document.getElementById('message-box');
+            messageBox.textContent = message;
+            messageBox.className = `mt-4 text-center p-3 rounded-lg ${classes}`;
+            messageBox.classList.remove('hidden');
+
+            setTimeout(() => {
+                messageBox.classList.add('hidden');
+            }, 3000);
+        }
+
+        // --- LLM API Workflow Placeholder (For reference/future) ---
+        async function fetchLlmGeneratedContent(prompt) {
+            /*
+            // ... API call logic ...
+            */
+        }
+        // --- End LLM Placeholder ---
+
+    </script>
+</body>
+</html>
