@@ -4,7 +4,7 @@
     <link rel="icon" type="castle/ico" href="castle.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blood & Moon Scroll Generator</title>
+    <title>Blood and Iron Scroll Generator</title>
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Load Tone.js for ambient music -->
@@ -70,22 +70,24 @@
         /* Tooltip Text Styling */
         .tooltip-container .tooltip-text {
             visibility: hidden;
-            width: 200px;
+            width: 240px;
             background-color: #3f0e1d; /* Dark Rose */
             color: #fecaca; /* Rose 200 */
             text-align: center;
             border-radius: 6px;
-            padding: 5px 8px;
+            padding: 8px;
             position: absolute;
             z-index: 10;
             bottom: 100%;
             left: 50%;
-            margin-left: -100px;
+            margin-left: -120px;
             opacity: 0;
             transition: opacity 0.3s;
             font-size: 0.8rem;
-            line-height: 1.2;
-            pointer-events: none; /* Allows clicks through the tooltip area */
+            line-height: 1.3;
+            pointer-events: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            border: 1px solid #881337;
         }
 
         /* Show the tooltip text when hovering over the tooltip container */
@@ -94,16 +96,98 @@
             opacity: 1;
         }
 
+        /* Styling for the Lore Lists */
+        .lore-section h3 {
+            color: #fb7185; /* Rose 400 */
+            font-family: 'Cinzel', serif;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+            margin-top: 1rem;
+            border-bottom: 1px solid #4c0519;
+            display: inline-block;
+        }
+        .lore-list {
+            list-style-type: disc;
+            list-style-position: inside;
+            margin-left: 0.5rem;
+        }
+
+        /* Modal Styling */
+        .map-modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .map-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            border: 2px solid #881337;
+            box-shadow: 0 0 20px #881337;
+            background-color: #000;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            background-color: #881337;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            transition: background-color 0.2s;
+        }
+        .close-btn:hover {
+            background-color: #be123c;
+        }
+
     </style>
 </head>
 <body class="bg-gray-950 min-h-screen p-4 sm:p-8 text-gray-200 antialiased">
 
+    <!-- Map Modal -->
+    <div id="mapModal" class="map-modal" onclick="closeMap(event)">
+        <div class="map-content bg-gray-900 rounded-lg p-1">
+            <span class="close-btn" onclick="closeMapButton()">×</span>
+            <!-- PLACE YOUR MAP IMAGE LINK BELOW IN src="" -->
+            <!-- If no image is provided, this placeholder text will show -->
+            <div id="map-placeholder" class="flex items-center justify-center w-[80vw] h-[60vh] bg-gray-950 text-rose-800 text-center p-10 italic border border-rose-900/30">
+                <div>
+                    <h3 class="text-2xl gothic-title mb-4">Map of Xiwen Kingdom</h3>
+                    <p>Open index.html and paste thy map image URL into the img tag src attribute.</p>
+                </div>
+            </div>
+            <img id="kingdom-map" src="https://raw.githubusercontent.com/HawkeSenpai/Vampire-RPG-Character-Maker/refs/heads/main/xiwen%20map.png" alt="Map of Xiwen Kingdom" class="hidden max-w-[90vw] max-h-[85vh] object-contain block mx-auto">
+        </div>
+    </div>
+
     <div class="max-w-4xl mx-auto">
-        <header class="text-center mb-8 border-b-2 border-rose-800 pb-4">
+        <header class="text-center mb-8 border-b-2 border-rose-800 pb-4 relative">
             <h1 class="text-4xl sm:text-5xl gothic-title text-rose-400 mb-2">
-                Blood & Moon Scroll
+                Blood and Iron Scroll
             </h1>
-            <p class="text-sm text-gray-400">A Solemn Transcription for Hawke's Chronicle</p>
+            <p class="text-sm text-gray-400">A Solemn Transcription for the Blood & Iron Chronicle</p>
+            
+            <!-- Map Button -->
+            <button onclick="openMap()" class="mt-4 text-xs sm:text-sm border border-rose-800 text-rose-300 hover:bg-rose-900/50 hover:text-white px-4 py-1 rounded transition-colors uppercase tracking-widest gothic-title">
+                View Map of Xiwen
+            </button>
         </header>
 
         <main class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -114,18 +198,41 @@
                 </h2>
                 
                 <!-- Project Brief Context Section -->
-                <details class="bg-gray-800 p-3 rounded-lg mb-4 text-sm border border-gray-700 cursor-pointer">
-                    <summary class="gothic-title text-rose-300">
-                        View Thy World's Chronicle (Project Brief)
+                <details class="bg-gray-800 p-3 rounded-lg mb-4 text-sm border border-gray-700 cursor-pointer lore-section">
+                    <summary class="gothic-title text-rose-300 hover:text-rose-100 transition-colors">
+                        View World Lore: Blood & Iron (Xiwen Kingdom)
                     </summary>
-                    <div class="mt-2 text-gray-400 space-y-2">
-                        <p>This setting is a medieval, low-fantasy, gothic Europe inspired by the Castlevania anime.</p>
-                        <ul class="list-disc list-inside ml-4">
-                            <li>The central conflict is Church vs. Vampire.</li>
-                            <li>Human magic is highly limited; no 'crazy shits'.</li>
-                            <li>The story takes place within a single, dark kingdom.</li>
+                    <div class="mt-2 text-gray-400 space-y-2 h-64 overflow-y-auto pr-2 custom-scrollbar">
+                        
+                        <h3>The Timeline</h3>
+                        <ul class="lore-list">
+                            <li><strong>The Blood Plague:</strong> Vampiric origin. Clots blood, kills thousands.</li>
+                            <li><strong>The Rituals:</strong> Desperate folk remedies attracted more vampires.</li>
+                            <li><strong>The Vanishing:</strong> The King and his retinue disappeared in Marchbirge Forest.</li>
+                            <li><strong>Martial Law:</strong> The Church seized power to organize defense.</li>
                         </ul>
-                        <p class="text-rose-400 font-semibold">Keep this context in mind when writing thy character's history and power!</p>
+
+                        <h3>The Church</h3>
+                        <p>Fanatic pragmatists. They burn collaborators and hoard food. They are not cruel, but cold. They will sacrifice a village to save the Kingdom.</p>
+
+                        <h3>Vampire Weaknesses</h3>
+                        <ul class="lore-list">
+                            <li><strong>Sunlight:</strong> Instant death.</li>
+                            <li><strong>Silver:</strong> Acts like poison.</li>
+                            <li><strong>Invitation:</strong> Cannot enter without being invited.</li>
+                        </ul>
+
+                        <h3>Human Magic</h3>
+                        <ul class="lore-list">
+                            <li><strong>Clergy:</strong> Slow rituals. Weak combat blessings.</li>
+                            <li><strong>Alchemy:</strong> Resource-heavy. Anyone can throw it, few can make it.</li>
+                            <li><strong>Forbidden:</strong> Uses vampire blood. Corrupting. Hunted by Church.</li>
+                            <li><strong>True Mages:</strong> 1 in 100,000. Powerful artifacts require lifetime investment.</li>
+                        </ul>
+                        
+                        <div class="mt-3 p-2 bg-rose-950/30 border border-rose-900/50 rounded text-rose-300 text-xs italic text-center">
+                            "If a human needs magic to survive an encounter, they already fucked up. Humans win through preparation and numbers."
+                        </div>
                     </div>
                 </details>
                 <!-- End Project Brief Context Section -->
@@ -146,7 +253,7 @@
                         <div>
                             <label for="origin" class="block text-sm font-medium text-gray-300">Origin</label>
                             <select id="origin" required class="w-full mt-1 p-3 rounded-lg input-field focus:ring-rose-500 focus:border-rose-500 appearance-none pr-8">
-                                <option value="local">Local</option>
+                                <option value="local">Local (Xiwen)</option>
                                 <option value="stranger">Stranger</option>
                             </select>
                         </div>
@@ -167,9 +274,9 @@
                     <div>
                         <label for="appearance" class="flex items-center text-sm font-medium text-gray-300">
                             Thy Appearance (Simple or Detailed)
-                            <span class="tooltip-container ml-2 text-rose-500/80">
+                            <span class="tooltip-container ml-2 text-rose-500/80 cursor-help">
                                 [?]
-                                <span class="tooltip-text">Describe physical features, clothing style (e.g., cleric robes, tattered peasant rags), and notable scars or marks.</span>
+                                <span class="tooltip-text">Describe signs of the plague, Church insignias, or scars from the organizing vampire hordes.</span>
                             </span>
                         </label>
                         <textarea id="appearance" rows="3" required class="w-full mt-1 p-3 rounded-lg input-field focus:ring-rose-500 focus:border-rose-500"></textarea>
@@ -177,10 +284,10 @@
 
                     <div>
                         <label for="personality" class="flex items-center text-sm font-medium text-gray-300">
-                            Thy Nature (4-7 Traits, separated by commas)
-                            <span class="tooltip-container ml-2 text-rose-500/80">
+                            Thy Nature (4-7 Traits)
+                            <span class="tooltip-container ml-2 text-rose-500/80 cursor-help">
                                 [?]
-                                <span class="tooltip-text">Examples: Zealous, Cunning, World-weary, Pious, Bloodthirsty, Loyal.</span>
+                                <span class="tooltip-text">Examples: Pragmatic, Fanatical, Sickly, Suspicious, Cunning, Pious.</span>
                             </span>
                         </label>
                         <textarea id="personality" rows="2" required class="w-full mt-1 p-3 rounded-lg input-field focus:ring-rose-500 focus:border-rose-500"></textarea>
@@ -188,10 +295,10 @@
 
                     <div>
                         <label for="backstory" class="flex items-center text-sm font-medium text-gray-300">
-                            Thy History (2-4 brief bullet points, separate each point with a newline)
-                            <span class="tooltip-container ml-2 text-rose-500/80">
+                            Thy History (2-4 brief bullet points)
+                            <span class="tooltip-container ml-2 text-rose-500/80 cursor-help">
                                 [?]
-                                <span class="tooltip-text">Keep human backstories grounded in the Church vs. Vampire conflict (e.g., lost family to a horde, trained by a secretive order).</span>
+                                <span class="tooltip-text">Did the plague take thy family? Did the Church seize thy food? Didst thou serve the vanished King?</span>
                             </span>
                         </label>
                         <textarea id="backstory" rows="4" required class="w-full mt-1 p-3 rounded-lg input-field focus:ring-rose-500 focus:border-rose-500"></textarea>
@@ -200,9 +307,9 @@
                     <div id="power-field" class="hidden">
                         <label for="special-power" class="flex items-center text-sm font-medium text-rose-400">
                             Thy Special Power (Vampire only)
-                            <span class="tooltip-container ml-2 text-rose-500/80">
+                            <span class="tooltip-container ml-2 text-rose-500/80 cursor-help">
                                 [?]
-                                <span class="tooltip-text">A specific, low-level power (e.g., Minor Hypnosis, Shadow Step, Night Sight). Avoid super strength.</span>
+                                <span class="tooltip-text">Keep it low-fantasy. Hypnosis, Night Sight, Spider-climb. Remember: Sunlight is insta-death.</span>
                             </span>
                         </label>
                         <input type="text" id="special-power" class="w-full mt-1 p-3 rounded-lg input-field border-rose-500 focus:ring-rose-500 focus:border-rose-500">
@@ -210,10 +317,10 @@
                     
                     <div>
                         <label for="equipment" class="flex items-center text-sm font-medium text-gray-300">
-                            Thy Equipment (Rapier, Black Armour, etc.)
-                            <span class="tooltip-container ml-2 text-rose-500/80">
+                            Thy Equipment
+                            <span class="tooltip-container ml-2 text-rose-500/80 cursor-help">
                                 [?]
-                                <span class="tooltip-text">A weapon or important tool. Remember: human magic is limited, focus on steel, holy items, or simple alchemy.</span>
+                                <span class="tooltip-text">Silver is king. True magic items are incredibly rare. Alchemical flasks or consecrated steel are best.</span>
                             </span>
                         </label>
                         <input type="text" id="equipment" required class="w-full mt-1 p-3 rounded-lg input-field focus:ring-rose-500 focus:border-rose-500">
@@ -244,7 +351,7 @@
         </main>
         
         <footer class="text-center mt-12 text-gray-600 text-xs">
-            Hawke's Chronicle Generator. Make sure to clean the bloodstain.
+            Blood & Iron Chronicle Generator. Make sure to clean the bloodstain.
         </footer>
     </div>
 
@@ -253,6 +360,35 @@
         const systemPrompt = "Thou art a gothic, low-fantasy RPG character sheet formatter. Structure the provided character data clearly and concisely for an RPG bot.";
         const apiKey = "";
         
+        // --- Map Modal Logic ---
+        function openMap() {
+            const modal = document.getElementById("mapModal");
+            const img = document.getElementById("kingdom-map");
+            const placeholder = document.getElementById("map-placeholder");
+            
+            modal.style.display = "flex";
+            
+            // Check if user has added an image source
+            if (img.getAttribute('src') && img.getAttribute('src') !== "") {
+                img.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+            } else {
+                img.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+            }
+        }
+
+        function closeMapButton() {
+            document.getElementById("mapModal").style.display = "none";
+        }
+
+        function closeMap(event) {
+            // Close if clicking the background, not the content
+            if (event.target.id === 'mapModal') {
+                document.getElementById("mapModal").style.display = "none";
+            }
+        }
+
         // --- Tone.js Music Variables ---
         let ambienceSynth = null;
         let isMusicStarted = false;
